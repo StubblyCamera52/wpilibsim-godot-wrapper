@@ -62,6 +62,7 @@ class NT4_Client:
 	var serverAddress: String
 	var ws: WebSocketPeer
 	var serverConnected: bool = false
+	var serverConnectionRequested: bool = false
 	
 	var subscriptions: Dictionary[int, NT4_Subscription] = {}
 	var serverTopics: Dictionary[String, NT4_Topic] = {}
@@ -73,7 +74,20 @@ class NT4_Client:
 	
 	func connect_ws():
 		if (!serverConnected):
+			serverConnectionRequested = true
 			ws.connect_to_url(serverAddress)
+	
+	func update():
+		if ws != null:
+			ws.poll()
+			if ws.get_available_packet_count() > 0:
+				var packet = ws.get_packet()
+				if ws.was_string_packet():
+					print(packet.get_string_from_ascii())
+			if (serverConnectionRequested and !serverConnected):
+				if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
+					serverConnected = true
+					serverConnectionRequested = false
 	
 	
 	
