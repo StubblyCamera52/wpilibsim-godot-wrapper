@@ -1,11 +1,6 @@
 class_name NT4 extends Resource
 
-const NT4_port: int = 5810
-
-var rng = RandomNumberGenerator.new()
-
-func getNewUID():
-	return rng.randi_range(1, 999999999)
+const NT4_DEFAULT_PORT: int = 5810
 
 class NT4_SubscriptionOptions:
 	var periodic = 0.1
@@ -22,12 +17,12 @@ class NT4_SubscriptionOptions:
 
 class NT4_Subscription:
 	var uid: int = -1
-	var topics = {} # using a dict bc godot doesnt have a Set type like javascript
-	var options = NT4_SubscriptionOptions.new()
+	var topics: Array[String] = []
+	var options: NT4_SubscriptionOptions = NT4_SubscriptionOptions.new()
 	
 	func toSubscribeObj():
 		return {
-		  "topics": Array(topics.keys()), # topics.keys bc the keys will be the set
+		  "topics": topics, # topics.keys bc the keys will be the set
 		  "subuid": uid,
 		  "options": options.toObj()
 		}
@@ -58,6 +53,7 @@ class NT4_Topic:
 
 
 class NT4_Client:
+	var rng = RandomNumberGenerator.new()
 	var appName: String
 	var serverAddress: String
 	var ws: WebSocketPeer
@@ -88,19 +84,21 @@ class NT4_Client:
 				if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
 					serverConnected = true
 					serverConnectionRequested = false
-	
-	
-	
-	#func subscribe(topicPatterns: Array[String], prefixMode: bool, sendAll: bool = false, periodic: float = 0.1) -> int:
-		#var newSub = NT4_Subscription.new()
-		#newSub.uid = getNewUID()
-		#newSub.topics = 2
-		#newSub.options.prefix = prefixMode
-		#newSub.options.all = sendAll
-		#newSub.options.periodic = periodic
-#
-		#subscriptions.set(newSub.uid, newSub)
-		#if (this.serverConnectionActive):
-			#this.ws_subscribe(newSub)
-#
-		#return newSub.uid
+
+	func subscribe(topicPatterns: Array[String], prefixMode: bool, sendAll: bool = false, periodic: float = 0.1) -> int:
+		var newSub = NT4_Subscription.new()
+		newSub.uid = getNewUID()
+		newSub.topics = topicPatterns
+		newSub.options.prefix = prefixMode
+		newSub.options.all = sendAll
+		newSub.options.periodic = periodic
+
+		subscriptions.set(newSub.uid, newSub)
+		if (serverConnected):
+			var payload = JSON.stringify([{"method": "subscribe", "params": newSub.toSubscribeObj()}])
+			ws.send_text(payload)
+
+		return newSub.uid
+
+	func getNewUID():
+		return rng.randi_range(1, 999999999)
