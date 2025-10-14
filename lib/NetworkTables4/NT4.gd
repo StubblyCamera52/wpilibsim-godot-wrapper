@@ -118,6 +118,7 @@ class NT4_Client:
 				print(data)
 		else:
 			# this means its msgpack (annoying but cool)
+			var data = MsgPackDecoder.decode(packet)
 			pass
 		
 	func getNewUID():

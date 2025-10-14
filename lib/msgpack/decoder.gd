@@ -49,5 +49,28 @@ class_name MsgPackDecoder extends Resource
 static func decode(byteArray: PackedByteArray) -> Variant:
 	# mess of switch statements to figure out the type of the data.
 	
-	match byteArray
+	var dataTypeByte = byteArray[0]
+	var fixSize: int
 	
+	# if the first byte is 0, its a fixed int
+	match dataTypeByte>>7:
+		1:
+			match dataTypeByte>>6:
+				2:
+					match (dataTypeByte>>5)&0b001:
+						0:
+							match (dataTypeByte>>4)&0b0001:
+								0:
+									# map and array size is the next 4 bits
+									print("fixed map of size "+str(dataTypeByte&0b00001111))
+								1:
+									print("fixed array of size "+str(dataTypeByte&0b00001111))
+						1:
+							# string size (chars) is the next 5 bits
+							print("fixed string of size "+str(dataTypeByte&0b00011111))
+				3:
+					print("not fixed")
+		0:
+			return byteArray[0]
+	
+	return null

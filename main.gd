@@ -11,7 +11,7 @@ func _ready():
 	nt_client.connect_ws()
 	while !nt_client.serverConnected:
 		await get_tree().process_frame
-	nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false)
+	nt_client.subscribe(["/AdvantageKit/RealOutputs/simulatedVoltage"], false)
 
 
 func _process(delta):
