@@ -19,8 +19,7 @@ func _process(delta):
 		while socket.get_available_packet_count():
 			var packet = socket.get_packet()
 			if socket.was_string_packet():
-				print
-			print("Packet: ", socket.get_packet())
+				print(packet.get_string_from_ascii())
 	elif state == WebSocketPeer.STATE_CLOSING:
 		# Keep polling to achieve proper close.
 		pass
