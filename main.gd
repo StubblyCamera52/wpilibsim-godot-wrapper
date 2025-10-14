@@ -17,6 +17,9 @@ func _process(delta):
 			initializedsocket = true
 			socket.send_text(JSON.stringify([{ "method": "subscribe", "params": {"topics": ["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], "subuid": 474, "options": {"periodic": 0.1, "all": false, "topicsonly": false, "prefix": false}} }]))
 		while socket.get_available_packet_count():
+			var packet = socket.get_packet()
+			if socket.was_string_packet():
+				print
 			print("Packet: ", socket.get_packet())
 	elif state == WebSocketPeer.STATE_CLOSING:
 		# Keep polling to achieve proper close.
