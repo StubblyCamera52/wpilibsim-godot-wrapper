@@ -51,13 +51,12 @@ class_name MsgPackDecoder extends Resource
 
 # i figured out abetter way to do this than the switch statements
 
-var example_data = PackedByteArray([148, 205, 4, 191, 206, 11, 250, 171, 78, 1, 203, 64, 38, 24, 191, 130, 188, 15, 146])
-
 var _buffer: StreamPeerBuffer
 var _decoder_function_map: Dictionary = {}
 
 func _init() -> void:
 	_buffer = StreamPeerBuffer.new()
+	_buffer.big_endian = true
 	_generate_decoder_function_map()
 
 # this is the dict of lambda functions for decoding the bytes of msgpack
@@ -106,10 +105,12 @@ func _generate_decoder_function_map() -> void:
 	# these functions add more decoders because these types have the number of elements in their type byte.
 	# positive fixint
 	for i in range(0x00, 0x80):
-		_decoder_function_map[i] = func(i=i): return i
+		var fixedint = i
+		_decoder_function_map[i] = func(): return fixedint
 	# fixarray
 	for i in range(0x90, 0xA0):
-		_decoder_function_map[i] = func(i=i): return _decode_array(i-0x90) # subtract 0x90 to remove the type bits and get only the length of the array
+		var length = i-0x90
+		_decoder_function_map[i] = func(): return _decode_array(length) # subtract 0x90 to remove the type bits and get only the length of the array
 
 func _read_byte_array(length: int) -> PackedByteArray:
 	if length <= 0:
