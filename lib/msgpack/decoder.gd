@@ -125,3 +125,11 @@ func _decode_array(length: int) -> Array:
 func _decode_value() -> Variant:
 	var type_byte: int = _buffer.get_u8()
 	return _decoder_function_map[type_byte].call()
+
+func decode(data: PackedByteArray) -> Variant:
+	_buffer.data_array = data
+	var decoded_data: Array = []
+	while _buffer.get_position() < _buffer.get_size():
+		var value = _decode_value()
+		decoded_data.append(value)
+	return decoded_data

@@ -54,6 +54,7 @@ class NT4_Topic:
 
 class NT4_Client:
 	var rng = RandomNumberGenerator.new()
+	var decoder = MsgPackDecoder.new()
 	var appName: String
 	var serverAddress: String
 	var ws: WebSocketPeer
@@ -118,8 +119,8 @@ class NT4_Client:
 				print(data)
 		else:
 			# this means its msgpack (annoying but cool)
-			var data = MsgPackDecoder.decode(packet)
-			pass
+			var data = decoder.decode(packet)
+			print(data)
 		
 	func getNewUID():
 		return rng.randi_range(1, 999999999)
