@@ -3,6 +3,9 @@ class_name MsgPackDecoder extends Resource
 # im gonna have ot use bitwise for this arent i
 
 # types from the msgpack spec:
+# bin means byte array
+# str is also a byte array but interpreted as a string
+
 
 #format name     | first byte (in binary) | first byte (in hex)
 #--------------- | ---------------------- | -------------------
@@ -55,9 +58,70 @@ var _decoder_function_map: Dictionary = {}
 
 func _init() -> void:
 	_buffer = StreamPeerBuffer.new()
+	_generate_decoder_function_map()
 
 # this is the dict of lambda functions for decoding the bytes of msgpack
 func _generate_decoder_function_map() -> void:
 	_decoder_function_map = {
-		
+		# bool formats
+		0xC0: func(): return null,
+		0xC2: func(): return false,
+		0xC3: func(): return true,
+		# byte array format
+		0xC4: func(): return _read_byte_array(_buffer.get_u8()),
+		0xC5: func(): return _read_byte_array(_buffer.get_u16()),
+		0xC6: func(): return _read_byte_array(_buffer.get_u32()),
+		# ext - yeah im not implementing this rn
+		0xC7: func(): return null,
+		0xC8: func(): return null,
+		0xC9: func(): return null,
+		# floats
+		0xCA: func(): return _buffer.get_float(),
+		0xCB: func(): return _buffer.get_double(),
+		# unsigned ints
+		0xCC: func(): return _buffer.get_u8(),
+		0xCD: func(): return _buffer.get_u16(),
+		0xCE: func(): return _buffer.get_u32(),
+		0xCF: func(): return _buffer.get_u64(),
+		# signed ints
+		0xD0: func(): return _buffer.get_8(),
+		0xD1: func(): return _buffer.get_16(),
+		0xD2: func(): return _buffer.get_32(),
+		0xD3: func(): return _buffer.get_64(),
+		# fixext - yeah im not doing this rn either
+		0xD4: func(): return null,
+		0xD5: func(): return null,
+		0xD6: func(): return null,
+		0xD7: func(): return null,
+		0xD8: func(): return null,
+		# str
+		0xD9: func(): return _read_byte_array(_buffer.get_u8()).get_string_from_ascii(),
+		0xDA: func(): return _read_byte_array(_buffer.get_u16()).get_string_from_ascii(),
+		0xDB: func(): return _read_byte_array(_buffer.get_u32()).get_string_from_ascii(),
+		# array
+		0xDC: func(): return _decode_array(_buffer.get_u16()),
+		0xDD: func(): return _decode_array(_buffer.get_u32()),
+		# map - not rn
 	}
+	# these functions add more decoders because these types have the number of elements in their type byte.
+	# positive fixint
+	for i in range(0x00, 0x80):
+		_decoder_function_map[i] = func(i=i): return i
+	# fixarray
+	for i in range(0x90, 0xA0):
+		_decoder_function_map[i] = func(i=i): return _decode_array(i-0x90) # subtract 0x90 to remove the type bits and get only the length of the array
+
+func _read_byte_array(length: int) -> PackedByteArray:
+	if length <= 0:
+		return []
+	return _buffer.get_data(length)[1] # the get data function returns two values and we dont care about the errors
+
+func _decode_array(length: int) -> Array:
+	var elements: Array = []
+	for i in length:
+		elements.append(_decode_value())
+	return elements
+
+func _decode_value() -> Variant:
+	var type_byte: int = _buffer.get_u8()
+	return _decoder_function_map[type_byte].call()
