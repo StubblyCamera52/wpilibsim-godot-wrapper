@@ -46,31 +46,18 @@ class_name MsgPackDecoder extends Resource
 
 # first one im going to try is the Pose2D struct - a fixarray of 2
 
-static func decode(byteArray: PackedByteArray) -> Variant:
-	# mess of switch statements to figure out the type of the data.
-	
-	var dataTypeByte = byteArray[0]
-	var fixSize: int
-	
-	# if the first byte is 0, its a fixed int
-	match dataTypeByte>>7:
-		1:
-			match dataTypeByte>>6:
-				2:
-					match (dataTypeByte>>5)&0b001:
-						0:
-							match (dataTypeByte>>4)&0b0001:
-								0:
-									# map and array size is the next 4 bits
-									print("fixed map of size "+str(dataTypeByte&0b00001111))
-								1:
-									print("fixed array of size "+str(dataTypeByte&0b00001111))
-						1:
-							# string size (chars) is the next 5 bits
-							print("fixed string of size "+str(dataTypeByte&0b00011111))
-				3:
-					print("not fixed")
-		0:
-			return byteArray[0]
-	
-	return null
+# i figured out abetter way to do this than the switch statements
+
+var example_data = PackedByteArray([148, 205, 4, 191, 206, 11, 250, 171, 78, 1, 203, 64, 38, 24, 191, 130, 188, 15, 146])
+
+var _buffer: StreamPeerBuffer
+var _decoder_function_map: Dictionary = {}
+
+func _init() -> void:
+	_buffer = StreamPeerBuffer.new()
+
+# this is the dict of lambda functions for decoding the bytes of msgpack
+func _generate_decoder_function_map() -> void:
+	_decoder_function_map = {
+		
+	}
