@@ -111,6 +111,18 @@ func _generate_decoder_function_map() -> void:
 	for i in range(0x90, 0xA0):
 		var length = i-0x90
 		_decoder_function_map[i] = func(): return _decode_array(length) # subtract 0x90 to remove the type bits and get only the length of the array
+	# fix map
+	for i in range(0x80, 0x90):
+		var length = i-0x80
+		_decoder_function_map[i] = func(): return _decode_map(length)
+	#fixstr
+	for i in range(0xA0, 0xC0):
+		var length = i-0xA0
+		_decoder_function_map[i] = func(): return _read_byte_array(length).get_string_from_ascii()
+	# negative fixint
+	for i in range(0xE0, 0x100):
+		var fixedint = i
+		_decoder_function_map[i] = func(): return (fixedint&0b00011111)*-1 # masks the type bits
 
 func _read_byte_array(length: int) -> PackedByteArray:
 	if length <= 0:
@@ -121,6 +133,14 @@ func _decode_array(length: int) -> Array:
 	var elements: Array = []
 	for i in length:
 		elements.append(_decode_value())
+	return elements
+
+func _decode_map(length: int) -> Dictionary: # map is javascript dictionary
+	var elements: Dictionary = {}
+	for i in length:
+		var key = _decode_value()
+		var value = _decode_value()
+		elements[key] = value
 	return elements
 
 func _decode_value() -> Variant:
