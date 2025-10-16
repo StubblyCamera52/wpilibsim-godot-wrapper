@@ -53,6 +53,7 @@ class NT4_Topic:
 
 
 class NT4_Client:
+	signal packet_recieved()
 	var rng = RandomNumberGenerator.new()
 	var decoder = MsgPackDecoder.new()
 	var appName: String
@@ -116,12 +117,24 @@ class NT4_Client:
 			if !data:
 				push_warning("NT4: ignoring packet because json did not parse")
 			else:
-				print(data)
+				if data["method"] != null:
+					match data["method"]:
+						"announce":
+							var newTopic = NT4_Topic.new()
+							var params = data["params"]
+							newTopic.uid = params.id
+							newTopic.name = params.name
+							newTopic.type = params.type
+							newTopic.properties = params.properties
+							serverTopics.set(newTopic.name, newTopic)
+						_:
+							push_warning("recieved unknown method on json packet: " + data["method"])
 		else:
 			# this means its msgpack (annoying but cool)
 			var data = decoder.decode(packet)
 			data[0][3] = WPILibStructHelper.decode_struct("Pose2d", data[0][3])
-			print(data)
+			packet_recieved.emit(data)
+			#print(data)
 		
 	func getNewUID():
 		return rng.randi_range(1, 999999999)
