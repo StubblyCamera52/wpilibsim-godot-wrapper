@@ -1,0 +1,89 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1k3kw6ib4mvj"]
+
+[ext_resource type="PackedScene" uid="uid://b2wvly3foaqrv" path="res://models/Field3d_2025FRCFieldAndyMarkV2/model.glb" id="1_fjpqx"]
+
+[node name="model" instance=ExtResource("1_fjpqx")]
+
+[node name="ALGAE (GE-25501)" parent="REEFSCAPE FIELD (FE-2025)" index="0"]
+visible = false
+
+[node name="ALGAE (GE-25501)2" parent="REEFSCAPE FIELD (FE-2025)" index="1"]
+visible = false
+
+[node name="CORAL (GE-25500)" parent="REEFSCAPE FIELD (FE-2025)" index="2"]
+visible = false
+
+[node name="ALGAE (GE-25501)3" parent="REEFSCAPE FIELD (FE-2025)" index="3"]
+visible = false
+
+[node name="ALGAE (GE-25501)4" parent="REEFSCAPE FIELD (FE-2025)" index="4"]
+visible = false
+
+[node name="ALGAE (GE-25501)5" parent="REEFSCAPE FIELD (FE-2025)" index="5"]
+visible = false
+
+[node name="ALGAE (GE-25501)6" parent="REEFSCAPE FIELD (FE-2025)" index="6"]
+visible = false
+
+[node name="ALGAE (GE-25501)7" parent="REEFSCAPE FIELD (FE-2025)" index="7"]
+visible = false
+
+[node name="ALGAE (GE-25501)8" parent="REEFSCAPE FIELD (FE-2025)" index="8"]
+visible = false
+
+[node name="CORAL (GE-25500)2" parent="REEFSCAPE FIELD (FE-2025)" index="9"]
+visible = false
+
+[node name="ALGAE (GE-25501)9" parent="REEFSCAPE FIELD (FE-2025)" index="10"]
+visible = false
+
+[node name="ALGAE (GE-25501)10" parent="REEFSCAPE FIELD (FE-2025)" index="11"]
+visible = false
+
+[node name="CORAL (GE-25500)3" parent="REEFSCAPE FIELD (FE-2025)" index="12"]
+visible = false
+
+[node name="algae" parent="REEFSCAPE FIELD (FE-2025)" index="13"]
+visible = false
+
+[node name="ALGAE (GE-25501)11" parent="REEFSCAPE FIELD (FE-2025)" index="14"]
+visible = false
+
+[node name="CORAL (GE-25500)4" parent="REEFSCAPE FIELD (FE-2025)" index="15"]
+visible = false
+
+[node name="ALGAE (GE-25501)12" parent="REEFSCAPE FIELD (FE-2025)" index="16"]
+visible = false
+
+[node name="ALGAE (GE-25501)13" parent="REEFSCAPE FIELD (FE-2025)" index="17"]
+visible = false
+
+[node name="ALGAE (GE-25501)14" parent="REEFSCAPE FIELD (FE-2025)" index="18"]
+visible = false
+
+[node name="CORAL (GE-25500)5" parent="REEFSCAPE FIELD (FE-2025)" index="19"]
+visible = false
+
+[node name="ALGAE (GE-25501)15" parent="REEFSCAPE FIELD (FE-2025)" index="21"]
+visible = false
+
+[node name="ALGAE (GE-25501)16" parent="REEFSCAPE FIELD (FE-2025)" index="22"]
+visible = false
+
+[node name="ALGAE (GE-25501)17" parent="REEFSCAPE FIELD (FE-2025)" index="23"]
+visible = false
+
+[node name="CORAL HOLDER (GE-25410) <1>" parent="REEFSCAPE FIELD (FE-2025)" index="25"]
+visible = false
+
+[node name="CORAL HOLDER (GE-25410) <2>" parent="REEFSCAPE FIELD (FE-2025)" index="27"]
+visible = false
+
+[node name="CORAL (GE-25500)66" parent="REEFSCAPE FIELD (FE-2025)" index="29"]
+visible = false
+
+[node name="CORAL HOLDER (GE-25410) <4>" parent="REEFSCAPE FIELD (FE-2025)" index="34"]
+visible = false
+
+[node name="CORAL HOLDER (GE-25410) <3>" parent="REEFSCAPE FIELD (FE-2025)" index="40"]
+visible = false

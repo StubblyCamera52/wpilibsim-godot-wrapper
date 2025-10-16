@@ -1,9 +1,34 @@
-[gd_scene load_steps=3 format=3 uid="uid://dwn7bo0xhghv5"]
+[gd_scene load_steps=6 format=3 uid="uid://dwn7bo0xhghv5"]
 
 [ext_resource type="Script" uid="uid://bjbt0lvx071s5" path="res://main.gd" id="1_ig7tw"]
-[ext_resource type="PackedScene" uid="uid://b2wvly3foaqrv" path="res://models/Field3d_2025FRCFieldAndyMarkV2/model.glb" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://c1k3kw6ib4mvj" path="res://models/stripped_field.tscn" id="2_0xm2m"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
+sky_top_color = Color(0.36611047, 0.43470034, 0.53377545, 1)
+energy_multiplier = 2.0
+
+[sub_resource type="Sky" id="Sky_0xm2m"]
+sky_material = SubResource("ProceduralSkyMaterial_0xm2m")
+
+[sub_resource type="Environment" id="Environment_0xm2m"]
+background_mode = 2
+background_color = Color(1, 1, 1, 1)
+sky = SubResource("Sky_0xm2m")
+ambient_light_color = Color(1, 1, 1, 1)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_ig7tw")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_0xm2m")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.9806215, -0.14206004, 0.13490894, 0, 0.6886204, 0.72512203, -0.19591191, -0.71107024, 0.675276, 0, 0, 0)
+light_energy = 3.0
+light_bake_mode = 1
+shadow_enabled = true
+shadow_blur = 0.0
+directional_shadow_mode = 0
+
 [node name="model" parent="." instance=ExtResource("2_0xm2m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.789556, 0, -4.0504866)
