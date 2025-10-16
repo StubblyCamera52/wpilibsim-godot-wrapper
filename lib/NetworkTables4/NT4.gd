@@ -120,6 +120,7 @@ class NT4_Client:
 		else:
 			# this means its msgpack (annoying but cool)
 			var data = decoder.decode(packet)
+			data[0][3] = WPILibStructHelper.decode_struct("Pose2d", data[0][3])
 			print(data)
 		
 	func getNewUID():
