@@ -10,6 +10,7 @@ var nt_client: NT4.NT4_Client = null
 
 var bot_model: Array[Node3D] = []
 var bot_model_zeroed_positions: Array = []
+var number_of_components = 0
 
 var gltf_document_load = GLTFDocument.new()
 var gltf_state_load = GLTFState.new()
@@ -27,9 +28,10 @@ func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
 		on_robot_move(pose)
 
 func _ready():
-	var bot_config = JSON.parse_string(FileAccess.open("/Users/gavanbess/3681-sim/models/Robot_2025/config.json", FileAccess.READ).get_as_text())
+	var bot_config = JSON.parse_string(FileAccess.open("/Users/gavanbess/Robot_2025/config.json", FileAccess.READ).get_as_text())
 	if bot_config:
-		var error = gltf_document_load.append_from_file("/Users/gavanbess/3681-sim/models/Robot_2025/model.glb", gltf_state_load)
+		number_of_components = bot_config.components.size()
+		var error = gltf_document_load.append_from_file("/Users/gavanbess/Robot_2025/model.glb", gltf_state_load)
 		if error == OK:
 			var zeroed_node3d = Node3D.new()
 			zeroed_node3d.name = "root"
@@ -45,9 +47,38 @@ func _ready():
 					"z":
 						zeroed_node3d.rotation_degrees.z = bot_config.rotations[i].degrees
 			bot_model.append(zeroed_node3d)
-			bot.add_child(bot_model[0])
+			# now for the components
+			#{
+				#"zeroedRotations": [
+					#{ "axis": "z" , "degrees": -90 },
+					#{ "axis": "y" , "degrees": 180 }
+				#],
+				#"zeroedPosition": [0.085, 0.135, 0.1195]
+			#},
+			for i in range(bot_config.components.size()):
+				error = gltf_document_load.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(i)+".glb", gltf_state_load)
+				if error == OK:
+					zeroed_node3d = Node3D.new()
+					zeroed_node3d.name = "root_"+str(i)
+					model = gltf_document_load.generate_scene(gltf_state_load)
+					zeroed_node3d.add_child(model)
+					var zeroed_position = bot_config.components[i].zeroedPosition
+					var zeroed_rotations = bot_config.components[i].zeroedRotations
+					model.position = Vector3(zeroed_position[0],zeroed_position[1],zeroed_position[2])
+					for j in range(zeroed_rotations.size()):
+						match zeroed_rotations[j].axis:
+							"x":
+								zeroed_node3d.rotation_degrees.x = zeroed_rotations[j].degrees
+							"y":
+								zeroed_node3d.rotation_degrees.y = zeroed_rotations[j].degrees
+							"z":
+								zeroed_node3d.rotation_degrees.z = zeroed_rotations[j].degrees
+					bot_model.append(zeroed_node3d)
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
+		
+		for i in range(bot_model.size()):
+			bot.add_child(bot_model[i])
 	
 	#nt_client = NT4.NT4_Client.new("godot-sim", "ws://localhost:5810/nt/godotsim")
 	#nt_client.on_topic_announce = on_topic_announced
