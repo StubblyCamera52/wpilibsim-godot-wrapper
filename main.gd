@@ -31,16 +31,20 @@ func _ready():
 	if bot_config:
 		var error = gltf_document_load.append_from_file("/Users/gavanbess/3681-sim/models/Robot_2025/model.glb", gltf_state_load)
 		if error == OK:
-			bot_model.append(gltf_document_load.generate_scene(gltf_state_load))
-			bot_model[0].position = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
+			var zeroed_node3d = Node3D.new()
+			zeroed_node3d.name = "root"
+			var model = gltf_document_load.generate_scene(gltf_state_load)
+			zeroed_node3d.add_child(model)
+			model.position = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
 			for i in range(bot_config.rotations.size()):
 				match bot_config.rotations[i].axis:
 					"x":
-						pass
+						zeroed_node3d.rotation_degrees.x = bot_config.rotations[i].degrees
 					"y":
-						pass
+						zeroed_node3d.rotation_degrees.y = bot_config.rotations[i].degrees
 					"z":
-						pass
+						zeroed_node3d.rotation_degrees.z = bot_config.rotations[i].degrees
+			bot_model.append(zeroed_node3d)
 			bot.add_child(bot_model[0])
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
