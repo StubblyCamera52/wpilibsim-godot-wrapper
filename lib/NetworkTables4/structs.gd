@@ -3,13 +3,13 @@ class_name WPILibStructHelper extends Resource
 static func decode_struct(type: String, data: PackedByteArray) -> Variant:
 	match type:
 		#struct of 3 doubles
-		"Pose2d":
+		"struct:Pose2d":
 			return {
 				"x": data.decode_double(0),
 				"y": data.decode_double(8),
 				"rot": data.decode_double(16)
 			}
-		"Pose3d":
+		"struct:Pose3d":
 			return {
 				"x": data.decode_double(0),
 				"y": data.decode_double(8),
@@ -18,7 +18,7 @@ static func decode_struct(type: String, data: PackedByteArray) -> Variant:
 				"pitch": data.decode_double(32),
 				"yaw": data.decode_double(48),
 			}
-		"Pose3d[]":
+		"struct:Pose3d[]":
 			var poses: Array = []
 			for i in range(data.size()/(8*6)): # 8 bytes per float, 6 floats per pose3d
 				poses.append({

@@ -129,7 +129,8 @@ class NT4_Client:
 						newTopic.type = params.type
 						if params.properties.size() > 0:
 							newTopic.properties = params.properties
-						serverTopics.set(newTopic.uid, newTopic)
+						serverTopics.set(int(newTopic.uid), newTopic)
+						print(newTopic.toPublishObj())
 						on_topic_announce.call(newTopic)
 					_:
 						push_warning("recieved unknown method on json packet: " + str(data[0]["method"]))
