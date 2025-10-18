@@ -1,12 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://dwn7bo0xhghv5"]
+[gd_scene load_steps=6 format=3 uid="uid://dwn7bo0xhghv5"]
 
 [ext_resource type="Script" uid="uid://bjbt0lvx071s5" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://c1k3kw6ib4mvj" path="res://models/stripped_field.tscn" id="2_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://byu432k3amhgt" path="res://models/Robot_2025/model_0.glb" id="4_5vw27"]
-[ext_resource type="PackedScene" uid="uid://cdhsutlng6ekm" path="res://models/Robot_2025/model_1.glb" id="5_kek77"]
-[ext_resource type="PackedScene" uid="uid://b8fbn1b71ut3u" path="res://models/Robot_2025/model_2.glb" id="6_4c57u"]
-[ext_resource type="PackedScene" uid="uid://bf3oo4b43wypm" path="res://models/bot.tscn" id="7_272bh"]
-[ext_resource type="PackedScene" uid="uid://04k7dxlies2l" path="res://models/Robot_2025/model_3.glb" id="7_efxa6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 sky_top_color = Color(0.36611047, 0.43470034, 0.53377545, 1)
@@ -42,12 +37,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.789556, 0, -4.0504866)
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -0.94826245, 1.4849567, -4.2065043)
 current = true
 
-[node name="model_0" parent="." instance=ExtResource("4_5vw27")]
-
-[node name="model_1" parent="." instance=ExtResource("5_kek77")]
-
-[node name="model_2" parent="." instance=ExtResource("6_4c57u")]
-
-[node name="model_3" parent="." instance=ExtResource("7_efxa6")]
-
-[node name="bot" parent="." instance=ExtResource("7_272bh")]
+[node name="bot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.33155, 1.6188843, -4.1859107)
