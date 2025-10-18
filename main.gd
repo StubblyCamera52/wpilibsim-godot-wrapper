@@ -36,16 +36,22 @@ func _ready():
 			var zeroed_node3d = Node3D.new()
 			zeroed_node3d.name = "root"
 			var model = gltf_document.generate_scene(gltf_state)
-			zeroed_node3d.add_child(model)
-			model.position = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
+			var actual_model: Node3D = model.get_children()[0]
+			actual_model.reparent(zeroed_node3d)
+			actual_model.owner = zeroed_node3d
+			model.queue_free()
+			#rotate model because of coordinate system differences
+			actual_model.rotation.y = PI/2
+			actual_model.rotation.x = PI/2
 			for i in range(bot_config.rotations.size()):
 				match bot_config.rotations[i].axis:
 					"x":
-						zeroed_node3d.rotation_degrees.x = bot_config.rotations[i].degrees
+						actual_model.rotation.z += (deg_to_rad(bot_config.rotations[i].degrees))
 					"y":
-						zeroed_node3d.rotation_degrees.y = bot_config.rotations[i].degrees
+						actual_model.rotation.x += (deg_to_rad(bot_config.rotations[i].degrees))
 					"z":
-						zeroed_node3d.rotation_degrees.z = bot_config.rotations[i].degrees
+						actual_model.rotation.y += (deg_to_rad(bot_config.rotations[i].degrees))
+			actual_model.position = Vector3(-bot_config.position[1], bot_config.position[2], -bot_config.position[0])
 			bot_model.append(zeroed_node3d)
 			# now for the components
 			#{
@@ -55,26 +61,29 @@ func _ready():
 				#],
 				#"zeroedPosition": [0.085, 0.135, 0.1195]
 			#},
-			for i in range(bot_config.components.size()):
-				gltf_state = GLTFState.new()
-				error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(i)+".glb", gltf_state)
-				if error == OK:
-					zeroed_node3d = Node3D.new()
-					zeroed_node3d.name = "root_"+str(i)
-					model = gltf_document.generate_scene(gltf_state)
-					zeroed_node3d.add_child(model)
-					var zeroed_position = bot_config.components[i].zeroedPosition
-					var zeroed_rotations = bot_config.components[i].zeroedRotations
-					model.position = Vector3(zeroed_position[0],zeroed_position[1],zeroed_position[2])
-					for j in range(zeroed_rotations.size()):
-						match zeroed_rotations[j].axis:
-							"x":
-								zeroed_node3d.rotation_degrees.x = zeroed_rotations[j].degrees
-							"y":
-								zeroed_node3d.rotation_degrees.y = zeroed_rotations[j].degrees
-							"z":
-								zeroed_node3d.rotation_degrees.z = zeroed_rotations[j].degrees
-					bot_model.append(zeroed_node3d)
+			#for i in range(bot_config.components.size()):
+				#gltf_state = GLTFState.new()
+				#error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(i)+".glb", gltf_state)
+				#if error == OK:
+					#zeroed_node3d = Node3D.new()
+					#zeroed_node3d.name = "root_"+str(i)
+					#model = gltf_document.generate_scene(gltf_state)
+					#zeroed_node3d.add_child(model)
+					#var zeroed_position = bot_config.components[i].zeroedPosition
+					#var zeroed_rotations = bot_config.components[i].zeroedRotations
+					## https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
+					## https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html#coordinate-system
+					## i think godot also uses CCW as positive rotation
+					#for j in range(zeroed_rotations.size()):
+						#match zeroed_rotations[j].axis:
+							#"x":
+								#model.rotation_degrees.z = zeroed_rotations[j].degrees
+							#"y":
+								#model.rotation_degrees.x = zeroed_rotations[j].degrees
+							#"z":
+								#model.rotation_degrees.y = zeroed_rotations[j].degrees
+					#model.position = Vector3(-zeroed_position[1],zeroed_position[2],-zeroed_position[0])
+					#bot_model.append(zeroed_node3d)
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 		
