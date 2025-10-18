@@ -53,7 +53,6 @@ class NT4_Topic:
 
 
 class NT4_Client:
-	signal packet_recieved()
 	var rng = RandomNumberGenerator.new()
 	var decoder = MsgPackDecoder.new()
 	var appName: String
@@ -62,8 +61,11 @@ class NT4_Client:
 	var serverConnected: bool = false
 	var serverConnectionRequested: bool = false
 	
+	var on_topic_announce: Callable # called when new topic
+	var on_new_topic_data: Callable # called when recieve new data packet
+	
 	var subscriptions: Dictionary[int, NT4_Subscription] = {}
-	var serverTopics: Dictionary[String, NT4_Topic] = {}
+	var serverTopics: Dictionary[int, NT4_Topic] = {}
 	
 	func _init(appName: String, serverAddress: String) -> void:
 		self.appName = appName
@@ -114,27 +116,29 @@ class NT4_Client:
 	func ws_on_recieve_packet(packet: PackedByteArray, was_string: bool):
 		if was_string:
 			var data = JSON.parse_string(packet.get_string_from_ascii())
+			print(data)
 			if !data:
 				push_warning("NT4: ignoring packet because json did not parse")
 			else:
-				if data["method"] != null:
-					match data["method"]:
-						"announce":
-							var newTopic = NT4_Topic.new()
-							var params = data["params"]
-							newTopic.uid = params.id
-							newTopic.name = params.name
-							newTopic.type = params.type
+				match data[0]["method"]:
+					"announce":
+						var newTopic = NT4_Topic.new()
+						var params = data[0]["params"]
+						newTopic.uid = params.id
+						newTopic.name = params.name
+						newTopic.type = params.type
+						if params.properties.size() > 0:
 							newTopic.properties = params.properties
-							serverTopics.set(newTopic.name, newTopic)
-						_:
-							push_warning("recieved unknown method on json packet: " + data["method"])
+						serverTopics.set(newTopic.uid, newTopic)
+						on_topic_announce.call(newTopic)
+					_:
+						push_warning("recieved unknown method on json packet: " + str(data[0]["method"]))
 		else:
 			# this means its msgpack (annoying but cool)
 			var data = decoder.decode(packet)
-			data[0][3] = WPILibStructHelper.decode_struct("Pose2d", data[0][3])
-			packet_recieved.emit(data)
-			#print(data)
+			if data[0][0] is int:
+				if serverTopics.get(data[0][0]) != null:
+					on_new_topic_data.call(serverTopics.get(data[0][0]), data[0][1], data[0][3])
 		
 	func getNewUID():
 		return rng.randi_range(1, 999999999)
