@@ -6,14 +6,13 @@ var initializedsocket = false
 
 var nt_client: NT4.NT4_Client = null
 
+var gltf_document = GLTFDocument.new()
+
 @onready var bot: Node3D = $bot
 
 var bot_model: Array[Node3D] = []
 var bot_model_zeroed_positions: Array = []
 var number_of_components = 0
-
-var gltf_document_load = GLTFDocument.new()
-var gltf_state_load = GLTFState.new()
 
 func on_topic_announced(topic: NT4.NT4_Topic):
 	pass
@@ -30,12 +29,13 @@ func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
 func _ready():
 	var bot_config = JSON.parse_string(FileAccess.open("/Users/gavanbess/Robot_2025/config.json", FileAccess.READ).get_as_text())
 	if bot_config:
+		var gltf_state = GLTFState.new()
 		number_of_components = bot_config.components.size()
-		var error = gltf_document_load.append_from_file("/Users/gavanbess/Robot_2025/model.glb", gltf_state_load)
+		var error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model.glb", gltf_state)
 		if error == OK:
 			var zeroed_node3d = Node3D.new()
 			zeroed_node3d.name = "root"
-			var model = gltf_document_load.generate_scene(gltf_state_load)
+			var model = gltf_document.generate_scene(gltf_state)
 			zeroed_node3d.add_child(model)
 			model.position = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
 			for i in range(bot_config.rotations.size()):
@@ -56,11 +56,12 @@ func _ready():
 				#"zeroedPosition": [0.085, 0.135, 0.1195]
 			#},
 			for i in range(bot_config.components.size()):
-				error = gltf_document_load.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(i)+".glb", gltf_state_load)
+				gltf_state = GLTFState.new()
+				error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(i)+".glb", gltf_state)
 				if error == OK:
 					zeroed_node3d = Node3D.new()
 					zeroed_node3d.name = "root_"+str(i)
-					model = gltf_document_load.generate_scene(gltf_state_load)
+					model = gltf_document.generate_scene(gltf_state)
 					zeroed_node3d.add_child(model)
 					var zeroed_position = bot_config.components[i].zeroedPosition
 					var zeroed_rotations = bot_config.components[i].zeroedRotations
