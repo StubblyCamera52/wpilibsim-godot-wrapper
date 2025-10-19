@@ -21,13 +21,15 @@ func on_topic_announced(topic: NT4.NT4_Topic):
 func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
 	print("data")
 	if topic.name == "/AdvantageKit/RealOutputs/FieldSimulation/RobotPose":
-		print("movebot")
-		print(value)
+		#print("movebot")
+		#print(value)
 		var pose = WPILibStructHelper.decode_struct(topic.type, value)
-		print(pose)
-		on_robot_move(pose)
+		#print(pose)
+		#on_robot_move(pose)
 	elif topic.name == "/AdvantageKit/RealOutputs/AScope/componentPoses":
+		print(value)
 		var poses = WPILibStructHelper.decode_struct(topic.type, value)
+		print(poses)
 		on_robot_comp_move(poses)
 
 func _ready():
@@ -38,64 +40,7 @@ func _ready():
 		number_of_components = bot_config.components.size()
 		var error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model.glb", gltf_state)
 		if error == OK:
-			var zeroed_node3d = Node3D.new()
-			zeroed_node3d.name = "root"
 			var model = gltf_document.generate_scene(gltf_state)
-			var actual_model: Node3D = model.get_children()[0]
-			actual_model.reparent(zeroed_node3d)
-			actual_model.owner = zeroed_node3d
-			model.queue_free()
-			#rotate model because of coordinate system differences
-			#actual_model.rotation.y = PI
-			#actual_model.rotation.x = -PI/2
-			for i in range(bot_config.rotations.size()):
-				match bot_config.rotations[i].axis:
-					"x":
-						actual_model.rotation.x += (deg_to_rad(bot_config.rotations[i].degrees))
-					"y":
-						actual_model.rotation.y += (deg_to_rad(bot_config.rotations[i].degrees))
-					"z":
-						actual_model.rotation.z += (deg_to_rad(bot_config.rotations[i].degrees))
-			actual_model.position = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
-			# now for the components
-			#{
-				#"zeroedRotations": [
-					#{ "axis": "z" , "degrees": -90 },
-					#{ "axis": "y" , "degrees": 180 }
-				#],
-				#"zeroedPosition": [0.085, 0.135, 0.1195]
-			#},
-			for i in range(bot_config.components.size()):
-				gltf_state = GLTFState.new()
-				error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(i)+".glb", gltf_state)
-				if error == OK:
-					var zeroed_node3d_2 = Node3D.new()
-					zeroed_node3d_2.name = "root_"+str(i)
-					model = gltf_document.generate_scene(gltf_state)
-					var actual_model_2: Node3D = model.get_children()[0]
-					actual_model_2.reparent(zeroed_node3d_2)
-					actual_model_2.owner = zeroed_node3d_2
-					model.queue_free()
-					var zeroed_position = bot_config.components[i].zeroedPosition
-					var zeroed_rotations = bot_config.components[i].zeroedRotations
-					# https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
-					# https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html#coordinate-system
-					# i think godot also uses CCW as positive rotation
-					#actual_model_2.rotation.y = PI
-					#actual_model_2.rotation.x = -PI/2
-					for j in range(zeroed_rotations.size()):
-						match zeroed_rotations[j].axis:
-							"x":
-								actual_model_2.rotation.x += (deg_to_rad(zeroed_rotations[j].degrees))
-							"y":
-								actual_model_2.rotation.y += (deg_to_rad(zeroed_rotations[j].degrees))
-							"z":
-								actual_model_2.rotation.z += (deg_to_rad(zeroed_rotations[j].degrees))
-					actual_model_2.position = Vector3(zeroed_position[0],zeroed_position[1],zeroed_position[2])
-					#parent the components to the robot
-					bot.add_child(zeroed_node3d_2)
-					bot_components.append(zeroed_node3d_2)
-			bot_model = zeroed_node3d
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 		
