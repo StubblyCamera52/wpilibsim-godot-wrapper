@@ -137,9 +137,13 @@ class NT4_Client:
 		else:
 			# this means its msgpack (annoying but cool)
 			var data = decoder.decode(packet)
-			if data[0][0] is int:
-				if serverTopics.get(data[0][0]) != null:
-					on_new_topic_data.call(serverTopics.get(data[0][0]), data[0][1], data[0][3])
+			#print(data)
+			# msgpack will send multiple updates in one packet
+			for update_packet in data:
+				#print(type_string(typeof(update_packet)))
+				if typeof(update_packet) == TYPE_ARRAY and update_packet.size() >= 4:
+					if serverTopics.get(int(update_packet[0])) != null:
+						on_new_topic_data.call(serverTopics.get(int(update_packet[0])), update_packet[1], update_packet[3])
 		
 	func getNewUID():
 		return rng.randi_range(1, 999999999)

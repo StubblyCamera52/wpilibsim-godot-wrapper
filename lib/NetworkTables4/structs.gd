@@ -21,7 +21,7 @@ static func decode_struct(type: String, data: PackedByteArray) -> Variant:
 			}
 		"struct:Pose3d[]":
 			var poses: Array = []
-			for i in range(data.size()/(8*6)): # 8 bytes per float, 7 floats per pose3d
+			for i in range(data.size()/(8*7)): # 8 bytes per float, 7 floats per pose3d
 				poses.append({
 					"x": data.decode_double(56*i),
 					"y": data.decode_double(8+56*i),

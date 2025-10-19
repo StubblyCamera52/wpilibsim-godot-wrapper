@@ -24,7 +24,7 @@ func on_topic_announced(topic: NT4.NT4_Topic):
 	pass
 
 func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
-	#print("data")
+	#print(topic.name)
 	if topic.name == "/AdvantageKit/RealOutputs/FieldSimulation/RobotPose":
 		#print("movebot")
 		#print(value)
