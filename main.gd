@@ -54,13 +54,31 @@ func _ready():
 						root_node.rotate_z(deg_to_rad(r.degrees))
 			root_node.transform.origin = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
 			#root_node.transform.basis = Basis.looking_at(Vector3.UP, Vector3.BACK)
+			var count = 0
 			for c in bot_config.components:
-				pass
+				gltf_state = GLTFState.new()
+				error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(count)+".glb", gltf_state)
+				count += 1
+				if error == OK:
+					var component_root_node = Node3D.new()
+					var component_model = gltf_document.generate_scene(gltf_state)
+					component_root_node.add_child(component_model)
+					for r in c.zeroedRotations:
+						match r.axis:
+							"x":
+								component_root_node.rotate_x(deg_to_rad(r.degrees))
+							"y":
+								component_root_node.rotate_y(deg_to_rad(r.degrees))
+							"z":
+								component_root_node.rotate_z(deg_to_rad(r.degrees))
+					component_root_node.transform.origin = Vector3(c.zeroedPosition[0],c.zeroedPosition[1],c.zeroedPosition[2])
+					bot_components.append(component_root_node)
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 		
 		bot.add_child(bot_model)
 		print(bot_model.get_children())
+		bot.transform.basis = Basis.looking_at(Vector3.DOWN, Vector3.BACK)
 	
 	#nt_client = NT4.NT4_Client.new("godot-sim", "ws://localhost:5810/nt/godotsim")
 	#nt_client.on_topic_announce = on_topic_announced
