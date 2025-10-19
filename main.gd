@@ -110,4 +110,4 @@ func on_robot_move(data):
 func on_robot_comp_move(data):
 	for i in range(number_of_components):
 		bot_components[i].position = Vector3(data[i].x,data[i].y,data[i].z)
-		bot_components[i].rotation = Vector3(data[i].roll, data[i].pitch, data[i].yaw)
+		bot_components[i].transform.basis = Basis(Quaternion(data[i].qx,data[i].qy,data[i].qz,data[i].w))

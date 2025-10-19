@@ -14,20 +14,22 @@ static func decode_struct(type: String, data: PackedByteArray) -> Variant:
 				"x": data.decode_double(0),
 				"y": data.decode_double(8),
 				"z": data.decode_double(16),
-				"roll": data.decode_double(24),
-				"pitch": data.decode_double(32),
-				"yaw": data.decode_double(48),
+				"w": data.decode_double(24),
+				"qx": data.decode_double(32),
+				"qy": data.decode_double(40),
+				"qz": data.decode_double(48),
 			}
 		"struct:Pose3d[]":
 			var poses: Array = []
-			for i in range(data.size()/(8*6)): # 8 bytes per float, 6 floats per pose3d
+			for i in range(data.size()/(8*6)): # 8 bytes per float, 7 floats per pose3d
 				poses.append({
-					"x": data.decode_double(64*i),
-					"y": data.decode_double(8+64*i),
-					"z": data.decode_double(16+64*i),
-					"roll": data.decode_double(24+64*i),
-					"pitch": data.decode_double(32+64*i),
-					"yaw": data.decode_double(48+64*i),
+					"x": data.decode_double(56*i),
+					"y": data.decode_double(8+56*i),
+					"z": data.decode_double(16+56*i),
+					"w": data.decode_double(24+56*i),
+					"qx": data.decode_double(32+56*i),
+					"qy": data.decode_double(40+56*i),
+					"qz": data.decode_double(48+56*i),
 				})
 			return poses
 			
