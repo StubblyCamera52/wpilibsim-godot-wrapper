@@ -44,7 +44,18 @@ func _ready():
 			var root_node = Node3D.new()
 			bot_model = root_node
 			bot_model.add_child(model)
-			root_node.transform.basis = Basis.looking_at(Vector3.UP, Vector3.FORWARD)
+			for r in bot_config.rotations:
+				match r.axis:
+					"x":
+						root_node.rotate_x(deg_to_rad(r.degrees))
+					"y":
+						root_node.rotate_y(deg_to_rad(r.degrees))
+					"z":
+						root_node.rotate_z(deg_to_rad(r.degrees))
+			root_node.transform.origin = Vector3(bot_config.position[0], bot_config.position[1], bot_config.position[2])
+			#root_node.transform.basis = Basis.looking_at(Vector3.UP, Vector3.BACK)
+			for c in bot_config.components:
+				pass
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 		
