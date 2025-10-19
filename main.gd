@@ -19,7 +19,7 @@ func on_topic_announced(topic: NT4.NT4_Topic):
 	pass
 
 func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
-	print("data")
+	#print("data")
 	if topic.name == "/AdvantageKit/RealOutputs/FieldSimulation/RobotPose":
 		#print("movebot")
 		#print(value)
@@ -72,22 +72,27 @@ func _ready():
 							"z":
 								component_root_node.rotate_z(deg_to_rad(r.degrees))
 					component_root_node.transform.origin = Vector3(c.zeroedPosition[0],c.zeroedPosition[1],c.zeroedPosition[2])
-					bot_components.append(component_root_node)
+					var positioner_node = Node3D.new()
+					positioner_node.add_child(component_root_node)
+					bot_components.append(positioner_node)
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 		
 		bot.add_child(bot_model)
+		var count = 0
+		for c in bot_components:
+			bot.add_child(c)
 		print(bot_model.get_children())
 		bot.transform.basis = Basis.looking_at(Vector3.DOWN, Vector3.BACK)
 	
-	#nt_client = NT4.NT4_Client.new("godot-sim", "ws://localhost:5810/nt/godotsim")
-	#nt_client.on_topic_announce = on_topic_announced
-	#nt_client.on_new_topic_data = on_new_topic_data
-	#nt_client.connect_ws()
-	#while !nt_client.serverConnected:
-		#await get_tree().process_frame
-	#nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false, false, 0.2)
-	#nt_client.subscribe(["/AdvantageKit/RealOutputs/AScope/componentPoses"], false, false, 0.2)
+	nt_client = NT4.NT4_Client.new("godot-sim", "ws://localhost:5810/nt/godotsim")
+	nt_client.on_topic_announce = on_topic_announced
+	nt_client.on_new_topic_data = on_new_topic_data
+	nt_client.connect_ws()
+	while !nt_client.serverConnected:
+		await get_tree().process_frame
+	nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false, false, 0.02)
+	nt_client.subscribe(["/AdvantageKit/RealOutputs/AScope/componentPoses"], false, false, 0.02)
 
 
 func _process(delta):
