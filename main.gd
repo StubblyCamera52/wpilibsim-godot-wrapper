@@ -114,7 +114,6 @@ func _process(delta):
 	
 func on_robot_move(data):
 	#print(data)
-	return
 	$bot.rotation.y = data.rot
 	$bot.position.x = data.x
 	$bot.position.z = -data.y
