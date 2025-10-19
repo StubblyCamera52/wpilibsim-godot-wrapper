@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://brm28m5qh8mf4"]
+
+[ext_resource type="PackedScene" uid="uid://dxi1u0kt48h0a" path="res://models/Field3d_2025FRCFieldAndyMarkV2/model_0.glb" id="1_q0tbo"]
+
+[node name="Coral" type="Node3D"]
+
+[node name="model_0" parent="." instance=ExtResource("1_q0tbo")]

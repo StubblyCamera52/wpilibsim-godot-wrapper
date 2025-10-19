@@ -15,6 +15,11 @@ var bot_model_zeroed_positions: Array = []
 var number_of_components = 0
 var bot_components: Array[Node3D] = []
 
+var corals: Array[Node3D] = []
+
+@onready var coral_model = preload("res://models/coral.tscn")
+@onready var coral_container = $CoralContainer
+
 func on_topic_announced(topic: NT4.NT4_Topic):
 	pass
 
@@ -25,12 +30,15 @@ func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
 		#print(value)
 		var pose = WPILibStructHelper.decode_struct(topic.type, value)
 		#print(pose)
-		#on_robot_move(pose)
+		on_robot_move(pose)
 	elif topic.name == "/AdvantageKit/RealOutputs/AScope/componentPoses":
-		print(value)
+		#print(value)
 		var poses = WPILibStructHelper.decode_struct(topic.type, value)
-		print(poses)
+		#print(poses)
 		on_robot_comp_move(poses)
+	elif topic.name == "/AdvantageKit/RealOutputs/FieldSimulation/Coral":
+		var poses = WPILibStructHelper.decode_struct(topic.type, value)
+		move_field_coral(poses)
 
 func _ready():
 	bot = $bot
@@ -91,8 +99,11 @@ func _ready():
 	nt_client.connect_ws()
 	while !nt_client.serverConnected:
 		await get_tree().process_frame
-	nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false, false, 0.02)
-	nt_client.subscribe(["/AdvantageKit/RealOutputs/AScope/componentPoses"], false, false, 0.02)
+	nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false, false, 0.05)
+	nt_client.subscribe(["/AdvantageKit/RealOutputs/AScope/componentPoses"], false, false, 0.05)
+	nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/Coral"], false, false, 0.05)
+	
+	coral_container.transform.basis = Basis.looking_at(Vector3.DOWN, Vector3.FORWARD)
 
 
 func _process(delta):
@@ -102,7 +113,8 @@ func _process(delta):
 	nt_client.update()
 	
 func on_robot_move(data):
-	print(data)
+	#print(data)
+	return
 	$bot.rotation.y = data.rot
 	$bot.position.x = data.x
 	$bot.position.z = -data.y
@@ -111,3 +123,16 @@ func on_robot_comp_move(data):
 	for i in range(number_of_components):
 		bot_components[i].position = Vector3(data[i].x,data[i].y,data[i].z)
 		bot_components[i].transform.basis = Basis(Quaternion(data[i].qx,data[i].qy,data[i].qz,data[i].w))
+
+func move_field_coral(data):
+	var num_corals = data.size()
+	if coral_container.get_child_count() < num_corals:
+		for i in range(num_corals-coral_container.get_child_count()):
+			var coral = coral_model.instantiate()
+			corals.append(coral)
+			coral_container.add_child(coral)
+	var count = 0
+	for pose in data:
+		corals[count].position = Vector3(pose.x, pose.y, pose.z)
+		corals[count].transform.basis = Basis(Quaternion(pose.x, pose.y, pose.z, pose.w))
+		count += 1

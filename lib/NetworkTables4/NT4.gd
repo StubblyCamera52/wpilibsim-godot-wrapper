@@ -116,7 +116,7 @@ class NT4_Client:
 	func ws_on_recieve_packet(packet: PackedByteArray, was_string: bool):
 		if was_string:
 			var data = JSON.parse_string(packet.get_string_from_ascii())
-			print(data)
+			#print(data)
 			if !data:
 				push_warning("NT4: ignoring packet because json did not parse")
 			else:
