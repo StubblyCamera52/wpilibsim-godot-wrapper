@@ -41,20 +41,24 @@ func _ready():
 		var error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model.glb", gltf_state)
 		if error == OK:
 			var model = gltf_document.generate_scene(gltf_state)
+			var root_node = Node3D.new()
+			bot_model = root_node
+			bot_model.add_child(model)
+			root_node.transform.basis = Basis.looking_at(Vector3.UP, Vector3.FORWARD)
 		else:
 			push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 		
 		bot.add_child(bot_model)
 		print(bot_model.get_children())
 	
-	nt_client = NT4.NT4_Client.new("godot-sim", "ws://localhost:5810/nt/godotsim")
-	nt_client.on_topic_announce = on_topic_announced
-	nt_client.on_new_topic_data = on_new_topic_data
-	nt_client.connect_ws()
-	while !nt_client.serverConnected:
-		await get_tree().process_frame
-	nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false, false, 0.2)
-	nt_client.subscribe(["/AdvantageKit/RealOutputs/AScope/componentPoses"], false, false, 0.2)
+	#nt_client = NT4.NT4_Client.new("godot-sim", "ws://localhost:5810/nt/godotsim")
+	#nt_client.on_topic_announce = on_topic_announced
+	#nt_client.on_new_topic_data = on_new_topic_data
+	#nt_client.connect_ws()
+	#while !nt_client.serverConnected:
+		#await get_tree().process_frame
+	#nt_client.subscribe(["/AdvantageKit/RealOutputs/FieldSimulation/RobotPose"], false, false, 0.2)
+	#nt_client.subscribe(["/AdvantageKit/RealOutputs/AScope/componentPoses"], false, false, 0.2)
 
 
 func _process(delta):
