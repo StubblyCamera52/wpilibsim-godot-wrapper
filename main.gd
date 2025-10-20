@@ -41,7 +41,7 @@ func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
 		move_field_coral(poses)
 
 func _ready():
-	var robot_model_path = OS.get_executable_path()+"/bot/"
+	var robot_model_path = "user://bot/"
 	bot = $bot
 	var bot_config = JSON.parse_string(FileAccess.open(robot_model_path+"config.json", FileAccess.READ).get_as_text())
 	if bot_config:
