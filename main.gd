@@ -41,12 +41,13 @@ func on_new_topic_data(topic: NT4.NT4_Topic, timestamp_us: int, value: Variant):
 		move_field_coral(poses)
 
 func _ready():
+	var robot_model_path = OS.get_executable_path()+"/bot/"
 	bot = $bot
-	var bot_config = JSON.parse_string(FileAccess.open("/Users/gavanbess/Robot_2025/config.json", FileAccess.READ).get_as_text())
+	var bot_config = JSON.parse_string(FileAccess.open(robot_model_path+"config.json", FileAccess.READ).get_as_text())
 	if bot_config:
 		var gltf_state = GLTFState.new()
 		number_of_components = bot_config.components.size()
-		var error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model.glb", gltf_state)
+		var error = gltf_document.append_from_file(robot_model_path+"model.glb", gltf_state)
 		if error == OK:
 			var model = gltf_document.generate_scene(gltf_state)
 			var root_node = Node3D.new()
@@ -65,7 +66,7 @@ func _ready():
 			var count = 0
 			for c in bot_config.components:
 				gltf_state = GLTFState.new()
-				error = gltf_document.append_from_file("/Users/gavanbess/Robot_2025/model_"+str(count)+".glb", gltf_state)
+				error = gltf_document.append_from_file(robot_model_path+"model_"+str(count)+".glb", gltf_state)
 				count += 1
 				if error == OK:
 					var component_root_node = Node3D.new()
