@@ -5,6 +5,9 @@
 I am in FIRST Robotics Compitition and my team is kinda small and we dont have our own field to practice on, so I wanted to make a godot project which will render the robot and the field, so I can practice driving the robot and scoring through the simulation, even if i dont have access to a real field.
 
 The way this works is when the simulation is run, pose values are published to data entries in the NetworkTables, and my godot program subscribes to the data it needs, reads the values, and updates the position and rotation of the model to render the data in 3D. (rotations was so annoying :sob:).
+  
+Note: in the demo video, my project is the thing on the right that says `3681-sim (DEBUG)` the thing on the left is what the project is connecting to.  
+[Demo Video](https://youtu.be/OelT4QfQNLY)
 
 Currently, its not very extensible and requires a specific setup to run.
   
